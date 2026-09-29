@@ -6,7 +6,7 @@ open_canvas(800,600)
 
 character = load_image("character.png")
 
-
+speed = 25
 
 def move_circle():
     print("CIRCLE")
