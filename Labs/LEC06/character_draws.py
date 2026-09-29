@@ -1,23 +1,23 @@
 # 실습 과제 진행
-from pico2d import *
 import math
-import time 
+from pico2d import *
 
 open_canvas(800,600)
 
 character = load_image("character.png")
 
-r = 100
-x = 400
-y = 300
-angle = 0
+
 
 def move_circle():
     print("CIRCLE")
-    clear_canvas()
-    character.draw(400,300)
-
-    update_canvas()
+    for deg in range(0,360,5):
+        rad = math.radians(deg)
+        x = 400 + 200 * math.cos(rad)
+        y = 300 + 200 * math.sin(rad)
+        clear_canvas()
+        character.draw(x,y)
+        update_canvas()
+        delay(0.01)
     pass
 
 def move_rectangle():
@@ -29,16 +29,13 @@ def move_triangle():
     pass
 
 while True:
-    start = time.monotonic()
-    while time.monotonic() - start < 10:
-        move_circle()
 
-    start = time.monotonic()
-    while time.monotonic() - start < 10:
-        move_rectangle()
+    move_circle()
 
-    start = time.monotonic()
-    while time.monotonic() - start < 10:
-        move_triangle()
+
+    move_rectangle()
+
+
+    move_triangle()
 
 close_canvas()
