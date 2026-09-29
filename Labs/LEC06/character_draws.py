@@ -13,9 +13,9 @@ right_start, right_End = 550, 50
 bottom_start, bottom_End = 750, 50
 left_start, left_End = 50, 550
 
-triangle_top_x, triangle_top_y = 0,0
-triangle_right_x, triangle_right_y = 0,0
-triangle_left_x, triangle_left_y = 0,0
+triangle_top_x, triangle_top_y = 400, 500
+triangle_right_x, triangle_right_y = 700, 200
+triangle_left_x, triangle_left_y = 100, 200
 
 def move_circle():
     print("CIRCLE")
