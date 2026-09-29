@@ -1,6 +1,7 @@
 # 실습 과제 진행
 from pico2d import *
 import math
+import time 
 
 open_canvas(800,600)
 
@@ -10,7 +11,6 @@ r = 100
 x = 400
 y = 300
 angle = 0
-theta = math.radians(angle)
 
 def move_circle():
     print("CIRCLE")
@@ -29,9 +29,16 @@ def move_triangle():
     pass
 
 while True:
-    move_circle()
-    move_rectangle()
-    move_triangle()
-    pass
+    start = time.monotonic()
+    while time.monotonic() - start < 10:
+        move_circle()
+
+    start = time.monotonic()
+    while time.monotonic() - start < 10:
+        move_rectangle()
+
+    start = time.monotonic()
+    while time.monotonic() - start < 10:
+        move_triangle()
 
 close_canvas()
