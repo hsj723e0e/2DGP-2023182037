@@ -57,7 +57,11 @@ def move_rectangle():
 
     pass
 
+
 def draw_top_To_Right():
+    for x in range(400,701,5):
+        y = 900 - x
+        draw_character(x,y)
     pass #(400,500)에서 출발 -> #(700,200)도착
 def draw_right_To_Left():
     pass #(700,200)에서 출발 -> #(100,200)에 도착
@@ -73,7 +77,7 @@ def move_triangle():
 
 while True:
     
-    # move_circle()
+    move_circle()
     move_rectangle()
     move_triangle()
     break;
