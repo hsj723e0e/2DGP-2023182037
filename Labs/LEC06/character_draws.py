@@ -64,6 +64,8 @@ def draw_top_To_Right():
         draw_character(x,y)
     pass #(400,500)에서 출발 -> #(700,200)도착
 def draw_right_To_Left():
+    for x in range(700, 99, -5):
+        draw_character(x, 200)
     pass #(700,200)에서 출발 -> #(100,200)에 도착
 def draw_left_To_Top():
     pass #(100,200)에 출발 -> #(400,500)에 도착
