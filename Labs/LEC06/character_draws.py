@@ -6,6 +6,11 @@ open_canvas(800,600)
 
 character = load_image("character.png")
 
+r = 100
+x = 400
+y = 300
+angle = 0
+theta = math.radians(angle)
 
 def move_circle():
     print("CIRCLE")
