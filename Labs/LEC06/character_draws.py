@@ -8,13 +8,10 @@ character = load_image("character.png")
 
 speed = 25
 
-Top_start = 0, Top_End = 0
-
-left_start = 0, left_End = 0
-
-right_start = 0, right_End = 0
-
-bottom_start = 0, bottom_End = 0
+Top_start, Top_End = 50, 750
+right_start, right_End = 550, 50
+bottom_start, bottom_End = 750, 50
+left_start, left_End = 50, 550
 
 def move_circle():
     print("CIRCLE")
