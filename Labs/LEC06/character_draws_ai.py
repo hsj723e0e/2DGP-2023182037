@@ -52,6 +52,27 @@ def move_rectangle():
         draw_character(RECT_LEFT, y)
 
 
+def move_triangle():
+    print("TRIANGLE")
+    top_x, top_y = TRI_TOP
+    right_x, right_y = TRI_RIGHT
+    left_x, left_y = TRI_LEFT
+
+    # 위쪽 꼭짓점에서 오른쪽 아래로 이동
+    for x in range(top_x, right_x + 1, SPEED):
+        y = top_y - (x - top_x)
+        draw_character(x, y)
+
+    # 오른쪽 아래에서 왼쪽 아래로 이동
+    for x in range(right_x, left_x - 1, -SPEED):
+        draw_character(x, right_y)
+
+    # 왼쪽 아래에서 위쪽 꼭짓점으로 이동
+    for x in range(left_x, top_x + 1, SPEED):
+        y = left_y + (x - left_x)
+        draw_character(x, y)
+
+
 def main():
     global character
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
@@ -60,6 +81,7 @@ def main():
         character = load_image(str(image_path))
         move_circle()
         move_rectangle()
+        move_triangle()
     finally:
         close_canvas()
 
