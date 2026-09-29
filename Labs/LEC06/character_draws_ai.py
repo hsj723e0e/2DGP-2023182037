@@ -17,7 +17,16 @@ TRI_RIGHT = (700, 200)
 TRI_LEFT = (100, 200)
 
 
+class AnimationStopped(Exception):
+    """창 닫기 또는 Esc 입력 시 반복을 종료한다."""
+
+
 def draw_character(x, y):
+    for event in get_events():
+        if event.type == SDL_QUIT or (
+            event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE
+        ):
+            raise AnimationStopped
     clear_canvas()
     character.draw(x, y)
     update_canvas()
@@ -79,9 +88,12 @@ def main():
     try:
         image_path = Path(__file__).resolve().with_name("character.png")
         character = load_image(str(image_path))
-        move_circle()
-        move_rectangle()
-        move_triangle()
+        while True:
+            move_circle()
+            move_rectangle()
+            move_triangle()
+    except AnimationStopped:
+        pass
     finally:
         close_canvas()
 
