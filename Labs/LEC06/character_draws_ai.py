@@ -33,6 +33,25 @@ def move_circle():
         draw_character(x, y)
 
 
+def move_rectangle():
+    print("RECTANGLE")
+    print("Top")
+    for x in range(RECT_LEFT, RECT_RIGHT, SPEED):
+        draw_character(x, RECT_TOP)
+
+    print("RIGHT")
+    for y in range(RECT_TOP, RECT_BOTTOM, -SPEED):
+        draw_character(RECT_RIGHT, y)
+
+    print("BOTTOM")
+    for x in range(RECT_RIGHT, RECT_LEFT, -SPEED):
+        draw_character(x, RECT_BOTTOM)
+
+    print("LEFT")
+    for y in range(RECT_BOTTOM, RECT_TOP, SPEED):
+        draw_character(RECT_LEFT, y)
+
+
 def main():
     global character
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
@@ -40,6 +59,7 @@ def main():
         image_path = Path(__file__).resolve().with_name("character.png")
         character = load_image(str(image_path))
         move_circle()
+        move_rectangle()
     finally:
         close_canvas()
 
