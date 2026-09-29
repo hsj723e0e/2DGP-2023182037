@@ -19,25 +19,25 @@ def move_circle():
 
 def draw_top():
     print("Top")
-    for x in range(50,750,5):
+    for x in range(50,750,speed):
         draw_character(x,550)
     pass
 
 def draw_right():
     print("RIGHT")
-    for y in range(550,50,-5):
+    for y in range(550,50,-speed):
         draw_character(750,y)
     pass
 
 def draw_bottom():
     print("BOTTOM")
-    for x in range(750,50,-5):
+    for x in range(750,50,-speed):
         draw_character(x,50)
     pass
 
 def draw_left():
     print("LEFT")
-    for y in range(50,550,5):
+    for y in range(50,550,speed):
         draw_character(50,y)
     pass
 
