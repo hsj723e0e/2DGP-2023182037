@@ -8,6 +8,14 @@ character = load_image("character.png")
 
 speed = 25
 
+Top_start = 0, Top_End = 0
+
+left_start = 0, left_End = 0
+
+right_start = 0, right_End = 0
+
+bottom_start = 0, bottom_End = 0
+
 def move_circle():
     print("CIRCLE")
     for deg in range(0,360,speed):
