@@ -68,6 +68,9 @@ def draw_right_To_Left():
         draw_character(x, 200)
     pass #(700,200)에서 출발 -> #(100,200)에 도착
 def draw_left_To_Top():
+    for x in range(100,401,5):
+        y = x + 100
+        draw_character(x, y)
     pass #(100,200)에 출발 -> #(400,500)에 도착
 
 def move_triangle():
