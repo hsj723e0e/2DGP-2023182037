@@ -59,16 +59,16 @@ def move_rectangle():
 
 
 def draw_top_To_Right():
-    for x in range(400,701,5):
+    for x in range(400,701,speed):
         y = 900 - x
         draw_character(x,y)
     pass #(400,500)에서 출발 -> #(700,200)도착
 def draw_right_To_Left():
-    for x in range(700, 99, -5):
+    for x in range(700, 99, -speed):
         draw_character(x, 200)
     pass #(700,200)에서 출발 -> #(100,200)에 도착
 def draw_left_To_Top():
-    for x in range(100,401,5):
+    for x in range(100,401,speed):
         y = x + 100
         draw_character(x, y)
     pass #(100,200)에 출발 -> #(400,500)에 도착
