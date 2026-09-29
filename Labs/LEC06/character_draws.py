@@ -8,6 +8,8 @@ character = load_image("character.png")
 
 speed = 25
 
+radius = 0
+
 Top_start, Top_End = 50, 750
 right_start, right_End = 550, 50
 bottom_start, bottom_End = 750, 50
