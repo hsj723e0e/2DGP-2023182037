@@ -57,8 +57,18 @@ def move_rectangle():
 
     pass
 
+def draw_top_To_Right():
+    pass
+def draw_right_To_Left():
+    pass
+def draw_left_To_Top():
+    pass
+
 def move_triangle():
     print("TRIANGLE")
+    draw_top_To_Right()
+    draw_right_To_Left()
+    draw_left_To_Top()
     pass
 
 while True:
