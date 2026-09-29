@@ -31,6 +31,8 @@ def draw_character(x, y):
 
 def draw_right():
     print("RIGHT")
+    for y in range(750,550,-5):
+        draw_character(750,y)
     pass
 
 def draw_left():
