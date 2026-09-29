@@ -31,12 +31,14 @@ def draw_character(x, y):
 
 def draw_right():
     print("RIGHT")
-    for y in range(750,550,-5):
+    for y in range(750,50,-5):
         draw_character(750,y)
     pass
 
 def draw_left():
     print("LEFT")
+    for x in range(750,50,-5):
+            draw_character(x,50)
     pass
 
 def draw_bottom():
