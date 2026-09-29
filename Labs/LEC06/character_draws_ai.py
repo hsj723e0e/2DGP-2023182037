@@ -24,13 +24,22 @@ def draw_character(x, y):
     delay(FRAME_DELAY)
 
 
+def move_circle():
+    print("CIRCLE")
+    for degrees in range(0, 360, SPEED):
+        radians = math.radians(degrees)
+        x = CANVAS_WIDTH / 2 + RADIUS * math.cos(radians)
+        y = CANVAS_HEIGHT / 2 + RADIUS * math.sin(radians)
+        draw_character(x, y)
+
+
 def main():
     global character
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     try:
         image_path = Path(__file__).resolve().with_name("character.png")
         character = load_image(str(image_path))
-        pass
+        move_circle()
     finally:
         close_canvas()
 
