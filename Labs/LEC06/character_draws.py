@@ -13,6 +13,10 @@ right_start, right_End = 550, 50
 bottom_start, bottom_End = 750, 50
 left_start, left_End = 50, 550
 
+triangle_top_x, triangle_top_y = 0,0
+triangle_right_x, triangle_right_y = 0,0
+triangle_left_x, triangle_left_y = 0,0
+
 def move_circle():
     print("CIRCLE")
     for deg in range(0,360,speed):
