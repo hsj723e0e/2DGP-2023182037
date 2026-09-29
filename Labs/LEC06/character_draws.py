@@ -23,8 +23,8 @@ def move_circle():
     print("CIRCLE")
     for deg in range(0,360,speed):
         rad = math.radians(deg)
-        x = 400 + 200 * math.cos(rad)
-        y = 300 + 200 * math.sin(rad)
+        x = 400 + radius * math.cos(rad)
+        y = 300 + radius * math.sin(rad)
         draw_character(x,y)
     pass
 
