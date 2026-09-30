@@ -1,5 +1,4 @@
 ﻿import json
-import time
 from pathlib import Path
 
 import pico2d as p
@@ -18,7 +17,7 @@ def main():
         sprite_sheet = p.load_image(str(BASE_DIR / "kyo_animation.png"))
         p.clear_canvas()
         p.update_canvas()
-        p.delay(0.1)
+        p.delay(0.2)
     finally:
         p.close_canvas()
 
