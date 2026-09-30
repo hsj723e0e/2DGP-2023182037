@@ -66,14 +66,16 @@ def main():
 
                 name = ANIMATION_ORDER[animation_index]
                 frames = animations[name]
+                total_frames = len(frames)
                 duration = FRAME_TIME[name] / ANIMATION_SPEED[name]
 
                 if elapsed < duration:
                     break
 
                 elapsed -= duration
-                frame_index += 1
-                if frame_index >= len(frames):
+                if frame_index + 1 < total_frames:
+                    frame_index += 1
+                else:
                     frame_index = 0
                     cycle_count[name] += 1
                     if cycle_count[name] >= ANIMATION_REPEAT[name]:
