@@ -1,4 +1,5 @@
 ﻿import json
+import math
 import time
 from pathlib import Path
 
@@ -91,14 +92,21 @@ def main():
                                 break
 
             name = ANIMATION_ORDER[animation_index]
-            frame = animations[name][frame_index]
+            frames = animations[name]
+            frame = frames[frame_index]
             source_x = frame["x"]
             source_y = frame["y"]
             source_w = frame["w"]
             source_h = frame["h"]
+            base_scale = 1.0
+            if name == "attack":
+                total_attack_frames = len(frames)
+                if total_attack_frames > 1:
+                    phase = frame_index / (total_attack_frames - 1)
+                    base_scale = 1.0 + 0.30 * math.sin(phase * math.pi)
             source_bottom = sprite_sheet.h - source_y - source_h
-            draw_width = round(source_w * scale)
-            draw_height = round(source_h * scale)
+            draw_width = round(source_w * scale * base_scale)
+            draw_height = round(source_h * scale * base_scale)
 
             p.clear_canvas()
             sprite_sheet.clip_draw(source_x, source_bottom, source_w, source_h, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, draw_width, draw_height)
