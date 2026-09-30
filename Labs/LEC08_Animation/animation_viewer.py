@@ -34,6 +34,9 @@ def main():
     p.open_canvas(SCREEN_WIDTH, SCREEN_HEIGHT)
     try:
         sprite_sheet = p.load_image(str(BASE_DIR / "kyo_animation.png"))
+        font_path = Path(p.__file__).resolve().parent / "data" / "ConsolaMalgun.ttf"
+        font = p.load_font(str(font_path), 22)
+
         animation_index = 0
         frame_index = 0
         repeat_count = 0
@@ -110,6 +113,14 @@ def main():
 
             p.clear_canvas()
             sprite_sheet.clip_draw(source_x, source_bottom, source_w, source_h, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, draw_width, draw_height)
+
+            if paused:
+                remaining = max(0.0, PAUSE_TIME - elapsed)
+                status = f"PAUSE: {remaining:.1f}s"
+            else:
+                status = f"SEQ {repeat_count + 1}/{REPEAT_COUNT}"
+
+            font.draw(25, SCREEN_HEIGHT - 25, f"{name.upper()}   {status}", (30, 30, 30))
             p.update_canvas()
             p.delay(0.01)
     finally:
