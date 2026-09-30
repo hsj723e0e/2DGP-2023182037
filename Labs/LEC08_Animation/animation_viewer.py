@@ -33,11 +33,16 @@ def main():
             elapsed = current_time - previous_time
             previous_time = current_time
 
-            if elapsed >= FRAME_TIME[ANIMATION_ORDER[animation_index]]:
-                frame_index = (frame_index + 1) % len(animations[ANIMATION_ORDER[animation_index]])
-
             name = ANIMATION_ORDER[animation_index]
-            frame = animations[name][frame_index]
+            frames = animations[name]
+            duration = FRAME_TIME[name]
+
+            if elapsed >= duration:
+                frame_index = (frame_index + 1) % len(frames)
+                if frame_index == 0:
+                    animation_index = (animation_index + 1) % len(ANIMATION_ORDER)
+
+            frame = frames[frame_index]
             source_x = frame["x"]
             source_y = frame["y"]
             source_w = frame["w"]
