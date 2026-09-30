@@ -26,6 +26,10 @@ def main():
         if actual != expected:
             print(f"[Warning] {name}: expected {expected} frames, got {actual}")
 
+    all_frames = [frame for name in ANIMATION_ORDER for frame in animations[name]]
+    minimum_height = min(frame["h"] for frame in all_frames)
+    scale = (SCREEN_HEIGHT / 2) / minimum_height
+
     p.open_canvas(SCREEN_WIDTH, SCREEN_HEIGHT)
     try:
         sprite_sheet = p.load_image(str(BASE_DIR / "kyo_animation.png"))
@@ -91,9 +95,11 @@ def main():
             source_w = frame["w"]
             source_h = frame["h"]
             source_bottom = sprite_sheet.h - source_y - source_h
+            draw_width = round(source_w * scale)
+            draw_height = round(source_h * scale)
 
             p.clear_canvas()
-            sprite_sheet.clip_draw(source_x, source_bottom, source_w, source_h, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            sprite_sheet.clip_draw(source_x, source_bottom, source_w, source_h, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, draw_width, draw_height)
             p.update_canvas()
             p.delay(0.01)
     finally:
