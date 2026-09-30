@@ -8,6 +8,7 @@ SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
 ANIMATION_ORDER = ["walk", "run", "jump", "attack"]
 FRAME_TIME = {"walk": 0.10, "run": 0.09, "jump": 0.12, "attack": 0.10}
+ANIMATION_SPEED = {"walk": 1.0, "run": 1.0, "jump": 1.0, "attack": 1.0}
 BASE_DIR = Path(__file__).resolve().parent
 
 
@@ -35,7 +36,7 @@ def main():
 
             name = ANIMATION_ORDER[animation_index]
             frames = animations[name]
-            duration = FRAME_TIME[name]
+            duration = FRAME_TIME[name] / ANIMATION_SPEED[name]
 
             if elapsed >= duration:
                 frame_index = (frame_index + 1) % len(frames)
