@@ -9,7 +9,7 @@ SCREEN_HEIGHT = 800
 ANIMATION_ORDER = ["walk", "run", "jump", "attack"]
 FRAME_TIME = {"walk": 0.10, "run": 0.09, "jump": 0.12, "attack": 0.10}
 ANIMATION_SPEED = {"walk": 1.0, "run": 1.0, "jump": 1.0, "attack": 1.0}
-ANIMATION_REPEAT = {"walk": 1, "run": 1, "jump": 1, "attack": 1}
+ANIMATION_REPEAT = {"walk": 1, "run": 2, "jump": 1, "attack": 1}
 BASE_DIR = Path(__file__).resolve().parent
 
 
@@ -36,8 +36,8 @@ def main():
             elapsed = current_time - previous_time
             previous_time = current_time
 
-            while elapsed >= FRAME_TIME[ANIMATION_ORDER[animation_index]]:
-                elapsed -= FRAME_TIME[ANIMATION_ORDER[animation_index]]
+            while elapsed >= FRAME_TIME[ANIMATION_ORDER[animation_index]] / ANIMATION_SPEED[ANIMATION_ORDER[animation_index]]:
+                elapsed -= FRAME_TIME[ANIMATION_ORDER[animation_index]] / ANIMATION_SPEED[ANIMATION_ORDER[animation_index]]
                 frame_index += 1
                 if frame_index >= len(animations[ANIMATION_ORDER[animation_index]]):
                     frame_index = 0
