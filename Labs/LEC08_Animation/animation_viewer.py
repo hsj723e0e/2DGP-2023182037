@@ -7,6 +7,7 @@ import pico2d as p
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
 ANIMATION_ORDER = ["walk", "run", "jump", "attack"]
+ANIMATION_FRAME_COUNT = {"walk": 11, "run": 6, "jump": 8, "attack": 10}
 FRAME_TIME = {"walk": 0.10, "run": 0.09, "jump": 0.12, "attack": 0.10}
 ANIMATION_SPEED = {"walk": 1.0, "run": 1.5, "jump": 1.0, "attack": 1.0}
 ANIMATION_REPEAT = {"walk": 1, "run": 2, "jump": 1, "attack": 1}
@@ -18,6 +19,12 @@ BASE_DIR = Path(__file__).resolve().parent
 def main():
     with open(BASE_DIR / "kyo_animation.json", "r", encoding="utf-8") as file:
         animations = json.load(file)["animations"]
+
+    for name in ANIMATION_ORDER:
+        actual = len(animations[name])
+        expected = ANIMATION_FRAME_COUNT[name]
+        if actual != expected:
+            print(f"[Warning] {name}: expected {expected} frames, got {actual}")
 
     p.open_canvas(SCREEN_WIDTH, SCREEN_HEIGHT)
     try:
