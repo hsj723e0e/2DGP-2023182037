@@ -25,6 +25,7 @@ FRAME_TIME = {
     "attack": 0.10,
 }
 
+# 달리기만 2배 빠르게, 같은 시트를 2번 반복
 ANIMATION_SPEED = {
     "walk": 1.0,
     "run": 2.0,
