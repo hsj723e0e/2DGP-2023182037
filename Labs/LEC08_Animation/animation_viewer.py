@@ -13,6 +13,10 @@ def main():
     with open(BASE_DIR / "kyo_animation.json", "r", encoding="utf-8") as file:
         animations = json.load(file)["animations"]
 
+    print("actions:", ANIMATION_ORDER)
+    for name in ANIMATION_ORDER:
+        print(name, len(animations[name]))
+
     p.open_canvas(SCREEN_WIDTH, SCREEN_HEIGHT)
     try:
         sprite_sheet = p.load_image(str(BASE_DIR / "kyo_animation.png"))
