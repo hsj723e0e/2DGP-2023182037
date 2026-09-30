@@ -9,6 +9,7 @@ SCREEN_HEIGHT = 800
 ANIMATION_ORDER = ["walk", "run", "jump", "attack"]
 FRAME_TIME = {"walk": 0.10, "run": 0.09, "jump": 0.12, "attack": 0.10}
 ANIMATION_SPEED = {"walk": 1.0, "run": 1.0, "jump": 1.0, "attack": 1.0}
+ANIMATION_REPEAT = {"walk": 1, "run": 1, "jump": 1, "attack": 1}
 BASE_DIR = Path(__file__).resolve().parent
 
 
@@ -21,6 +22,7 @@ def main():
         sprite_sheet = p.load_image(str(BASE_DIR / "kyo_animation.png"))
         animation_index = 0
         frame_index = 0
+        cycle_count = {name: 0 for name in ANIMATION_ORDER}
         previous_time = time.perf_counter()
 
         while True:
@@ -39,9 +41,13 @@ def main():
             duration = FRAME_TIME[name] / ANIMATION_SPEED[name]
 
             if elapsed >= duration:
-                frame_index = (frame_index + 1) % len(frames)
-                if frame_index == 0:
-                    animation_index = (animation_index + 1) % len(ANIMATION_ORDER)
+                frame_index += 1
+                if frame_index >= len(frames):
+                    frame_index = 0
+                    cycle_count[name] += 1
+                    if cycle_count[name] >= ANIMATION_REPEAT[name]:
+                        cycle_count[name] = 0
+                        animation_index = (animation_index + 1) % len(ANIMATION_ORDER)
 
             frame = frames[frame_index]
             source_x = frame["x"]
