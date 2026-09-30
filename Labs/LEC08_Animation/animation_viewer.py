@@ -121,6 +121,7 @@ def main():
                 status = f"SEQ {repeat_count + 1}/{REPEAT_COUNT}"
 
             font.draw(25, SCREEN_HEIGHT - 25, f"{name.upper()}   {status}", (30, 30, 30))
+            font.draw(25, 25, f"FRAME: {frame_index + 1}/{len(frames)}   SIZE: {source_w}x{source_h}   ESC: EXIT", (30, 30, 30))
             p.update_canvas()
             p.delay(0.01)
     finally:
