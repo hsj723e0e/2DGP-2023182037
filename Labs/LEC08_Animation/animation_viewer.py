@@ -8,7 +8,7 @@ SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
 ANIMATION_ORDER = ["walk", "run", "jump", "attack"]
 FRAME_TIME = {"walk": 0.10, "run": 0.09, "jump": 0.12, "attack": 0.10}
-ANIMATION_SPEED = {"walk": 1.0, "run": 1.0, "jump": 1.0, "attack": 1.0}
+ANIMATION_SPEED = {"walk": 1.0, "run": 1.5, "jump": 1.0, "attack": 1.0}
 ANIMATION_REPEAT = {"walk": 1, "run": 2, "jump": 1, "attack": 1}
 REPEAT_COUNT = 5
 PAUSE_TIME = 1.0
@@ -67,14 +67,18 @@ def main():
                     cycle_count[name] += 1
                     if cycle_count[name] >= ANIMATION_REPEAT[name]:
                         cycle_count[name] = 0
-                        animation_index = (animation_index + 1) % len(ANIMATION_ORDER)
-                        if animation_index == 0:
+                        animation_index += 1
+                        if animation_index >= len(ANIMATION_ORDER):
+                            animation_index = 0
                             repeat_count += 1
                             if repeat_count >= REPEAT_COUNT:
                                 paused = True
+                                animation_index = len(ANIMATION_ORDER) - 1
+                                frame_index = len(animations["attack"]) - 1
                                 break
 
-            frame = animations[ANIMATION_ORDER[animation_index]][frame_index]
+            name = ANIMATION_ORDER[animation_index]
+            frame = animations[name][frame_index]
             source_x = frame["x"]
             source_y = frame["y"]
             source_w = frame["w"]
