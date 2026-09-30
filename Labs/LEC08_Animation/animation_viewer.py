@@ -36,20 +36,18 @@ def main():
             elapsed = current_time - previous_time
             previous_time = current_time
 
-            name = ANIMATION_ORDER[animation_index]
-            frames = animations[name]
-            duration = FRAME_TIME[name] / ANIMATION_SPEED[name]
-
-            if elapsed >= duration:
+            while elapsed >= FRAME_TIME[ANIMATION_ORDER[animation_index]]:
+                elapsed -= FRAME_TIME[ANIMATION_ORDER[animation_index]]
                 frame_index += 1
-                if frame_index >= len(frames):
+                if frame_index >= len(animations[ANIMATION_ORDER[animation_index]]):
                     frame_index = 0
-                    cycle_count[name] += 1
-                    if cycle_count[name] >= ANIMATION_REPEAT[name]:
-                        cycle_count[name] = 0
+                    cycle_count[ANIMATION_ORDER[animation_index]] += 1
+                    if cycle_count[ANIMATION_ORDER[animation_index]] >= ANIMATION_REPEAT[ANIMATION_ORDER[animation_index]]:
+                        cycle_count[ANIMATION_ORDER[animation_index]] = 0
                         animation_index = (animation_index + 1) % len(ANIMATION_ORDER)
 
-            frame = frames[frame_index]
+            name = ANIMATION_ORDER[animation_index]
+            frame = animations[name][frame_index]
             source_x = frame["x"]
             source_y = frame["y"]
             source_w = frame["w"]
