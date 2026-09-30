@@ -10,6 +10,8 @@ ANIMATION_ORDER = ["walk", "run", "jump", "attack"]
 FRAME_TIME = {"walk": 0.10, "run": 0.09, "jump": 0.12, "attack": 0.10}
 ANIMATION_SPEED = {"walk": 1.0, "run": 1.0, "jump": 1.0, "attack": 1.0}
 ANIMATION_REPEAT = {"walk": 1, "run": 2, "jump": 1, "attack": 1}
+REPEAT_COUNT = 5
+PAUSE_TIME = 1.0
 BASE_DIR = Path(__file__).resolve().parent
 
 
@@ -22,7 +24,10 @@ def main():
         sprite_sheet = p.load_image(str(BASE_DIR / "kyo_animation.png"))
         animation_index = 0
         frame_index = 0
+        repeat_count = 0
         cycle_count = {name: 0 for name in ANIMATION_ORDER}
+        paused = False
+        elapsed = 0.0
         previous_time = time.perf_counter()
 
         while True:
@@ -33,21 +38,43 @@ def main():
                     return
 
             current_time = time.perf_counter()
-            elapsed = current_time - previous_time
+            elapsed += current_time - previous_time
             previous_time = current_time
 
-            while elapsed >= FRAME_TIME[ANIMATION_ORDER[animation_index]] / ANIMATION_SPEED[ANIMATION_ORDER[animation_index]]:
-                elapsed -= FRAME_TIME[ANIMATION_ORDER[animation_index]] / ANIMATION_SPEED[ANIMATION_ORDER[animation_index]]
-                frame_index += 1
-                if frame_index >= len(animations[ANIMATION_ORDER[animation_index]]):
+            while True:
+                if paused:
+                    if elapsed < PAUSE_TIME:
+                        break
+                    elapsed -= PAUSE_TIME
+                    paused = False
+                    animation_index = 0
                     frame_index = 0
-                    cycle_count[ANIMATION_ORDER[animation_index]] += 1
-                    if cycle_count[ANIMATION_ORDER[animation_index]] >= ANIMATION_REPEAT[ANIMATION_ORDER[animation_index]]:
-                        cycle_count[ANIMATION_ORDER[animation_index]] = 0
-                        animation_index = (animation_index + 1) % len(ANIMATION_ORDER)
+                    repeat_count = 0
+                    cycle_count = {name: 0 for name in ANIMATION_ORDER}
+                    continue
 
-            name = ANIMATION_ORDER[animation_index]
-            frame = animations[name][frame_index]
+                name = ANIMATION_ORDER[animation_index]
+                frames = animations[name]
+                duration = FRAME_TIME[name] / ANIMATION_SPEED[name]
+
+                if elapsed < duration:
+                    break
+
+                elapsed -= duration
+                frame_index += 1
+                if frame_index >= len(frames):
+                    frame_index = 0
+                    cycle_count[name] += 1
+                    if cycle_count[name] >= ANIMATION_REPEAT[name]:
+                        cycle_count[name] = 0
+                        animation_index = (animation_index + 1) % len(ANIMATION_ORDER)
+                        if animation_index == 0:
+                            repeat_count += 1
+                            if repeat_count >= REPEAT_COUNT:
+                                paused = True
+                                break
+
+            frame = animations[ANIMATION_ORDER[animation_index]][frame_index]
             source_x = frame["x"]
             source_y = frame["y"]
             source_w = frame["w"]
