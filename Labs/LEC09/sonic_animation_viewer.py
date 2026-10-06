@@ -27,9 +27,6 @@ class Frame:
     anchor_y: float | None = None
 
 
-FIRST_FRAME = Frame(1, 39, 29, 39)
-
-
 @dataclass(frozen=True)
 class Animation:
     name: str
@@ -38,9 +35,9 @@ class Animation:
 
 ANIMATIONS = (
     Animation('걷기와 몸 낮추기', tuple(Frame(*rect) for rect in (
-        (1, 39, 29, 39), (31, 40, 26, 38), (58, 39, 29, 39),
-        (87, 40, 29, 38), (118, 40, 30, 38), (150, 40, 30, 38),
-        (182, 40, 30, 38), (212, 39, 29, 38), (241, 39, 28, 38),
+        (1, 39, 29, 39), (31, 40, 26, 38), (58, 39, 28, 39),
+        (86, 40, 30, 38), (118, 40, 30, 38), (150, 40, 30, 38),
+        (182, 40, 29, 38), (211, 39, 29, 38), (240, 39, 29, 38),
         (270, 45, 24, 32), (302, 51, 29, 26),
     ))),
     Animation('빠른 걷기', tuple(Frame(*rect) for rect in (
@@ -53,12 +50,12 @@ ANIMATIONS = (
         (1, 124, 33, 40), (39, 124, 35, 39), (89, 125, 35, 38),
         (130, 121, 34, 42), (181, 122, 34, 41), (228, 122, 33, 40),
     ))),
-    Animation('몸 말기', tuple(Frame(*rect) for rect in (
-        (1, 169, 29, 30), (35, 168, 29, 30), (67, 169, 30, 29),
+    Animation('몸 말기', tuple(Frame(*rect, anchor_y=rect[3] / 2 + 20) for rect in (
+        (1, 169, 29, 30), (35, 167, 29, 31), (67, 169, 30, 29),
         (98, 169, 31, 29), (131, 168, 29, 30), (162, 168, 29, 31),
         (193, 170, 30, 29), (230, 170, 31, 29), (268, 170, 30, 30),
     ))),
-    Animation('구르기', tuple(Frame(*rect) for rect in (
+    Animation('구르기', tuple(Frame(*rect, anchor_y=rect[3] / 2 + 20) for rect in (
         (1, 206, 30, 27), (36, 206, 29, 27), (70, 206, 29, 27),
         (105, 206, 29, 27), (139, 206, 29, 27), (174, 206, 29, 27),
     ))),
@@ -66,20 +63,22 @@ ANIMATIONS = (
         (1, 239, 29, 35), (36, 239, 30, 35), (74, 239, 31, 35),
         (111, 238, 31, 36), (149, 239, 30, 35), (186, 238, 31, 36),
     ))),
-    Animation('낮은 질주', tuple(Frame(*rect) for rect in (
+    Animation('낮은 질주', tuple(
+        Frame(*rect, anchor_x=rect[2] / 2 if index < 2 else rect[2] - 15)
+        for index, rect in enumerate((
         (1, 283, 29, 35), (36, 283, 30, 35), (72, 286, 39, 31),
         (123, 285, 39, 32), (172, 286, 39, 31), (218, 285, 38, 32),
-    ))),
-    Animation('세로 회전', tuple(Frame(*rect) for rect in (
+    )))),
+    Animation('세로 회전', tuple(Frame(*rect, anchor_y=rect[3] / 2 + 20) for rect in (
         (1, 326, 24, 45), (31, 327, 29, 44), (65, 327, 20, 44),
         (90, 327, 25, 43), (119, 327, 25, 43), (149, 327, 20, 44),
     ))),
-    Animation('옆으로 눕는 자세', tuple(Frame(*rect) for rect in (
+    Animation('옆으로 눕는 자세', tuple(Frame(*rect, anchor_y=rect[3] / 2 + 20) for rect in (
         (184, 341, 40, 28), (232, 341, 39, 27),
     ))),
     Animation('앞을 향한 걷기', tuple(Frame(*rect) for rect in (
         (1, 379, 27, 38), (31, 379, 31, 36), (64, 379, 31, 36),
-        (99, 378, 33, 37), (136, 379, 32, 36), (176, 379, 33, 36),
+        (99, 377, 33, 38), (136, 379, 32, 36), (176, 379, 33, 36),
         (217, 379, 33, 36), (254, 378, 33, 36),
     ))),
     Animation('팔 들기', tuple(Frame(*rect) for rect in (
@@ -200,6 +199,7 @@ def main():
 
     pico2d.open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     try:
+        pico2d.hide_lattice()
         try:
             sprite = load_sprite(pico2d)
             validate_animations(ANIMATIONS, sprite.w, sprite.h)
