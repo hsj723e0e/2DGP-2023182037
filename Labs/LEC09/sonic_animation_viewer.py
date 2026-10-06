@@ -3,12 +3,14 @@
 from pathlib import Path
 from dataclasses import dataclass
 import sys
+from time import perf_counter
 
 CANVAS_WIDTH = 1200
 CANVAS_HEIGHT = 800
 DISPLAY_SCALE = 4
 ANCHOR_X = CANVAS_WIDTH // 2
 ANCHOR_Y = CANVAS_HEIGHT // 2 - 80
+FRAME_DURATION = 0.1
 SPRITE_PATH = Path(__file__).resolve().with_name('sonic-sprite.png')
 
 
@@ -86,6 +88,30 @@ ANIMATIONS = (
 )
 
 
+@dataclass
+class Player:
+    animations: tuple[Animation, ...] = ANIMATIONS
+    animation_index: int = 0
+    frame_index: int = 0
+    frame_elapsed: float = 0.0
+
+    @property
+    def animation(self):
+        return self.animations[self.animation_index]
+
+    @property
+    def frame(self):
+        return self.animation.frames[self.frame_index]
+
+    def update(self, elapsed):
+        self.frame_elapsed += elapsed
+        while self.frame_elapsed + 1e-12 >= FRAME_DURATION:
+            if self.frame_index == len(self.animation.frames) - 1:
+                break
+            self.frame_elapsed -= FRAME_DURATION
+            self.frame_index += 1
+
+
 def draw_frame(sprite, frame):
     """위쪽 기준 원본 좌표를 pico2d 좌표로 바꾸어 출력한다."""
     bottom = sprite.h - frame.top - frame.height
@@ -145,9 +171,14 @@ def main():
         except (OSError, ValueError) as error:
             print(error, file=sys.stderr)
             return 1
+        player = Player()
+        previous_time = perf_counter()
         while handle_events(pico2d):
+            current_time = perf_counter()
+            player.update(current_time - previous_time)
+            previous_time = current_time
             pico2d.clear_canvas()
-            draw_frame(sprite, ANIMATIONS[0].frames[0])
+            draw_frame(sprite, player.frame)
             pico2d.update_canvas()
             pico2d.delay(0.01)
     finally:
