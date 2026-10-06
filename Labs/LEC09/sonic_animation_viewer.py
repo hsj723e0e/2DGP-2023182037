@@ -242,6 +242,13 @@ def handle_events(pico2d):
     return True
 
 
+def clear_background(pico2d):
+    """pico2d 기본 배경 위에 검은색을 화면 전체에 채운다."""
+    pico2d.clear_canvas()
+    pico2d.draw_rectangle(0, 0, CANVAS_WIDTH - 1, CANVAS_HEIGHT - 1,
+                          r=0, g=0, b=0, a=255, filled=True)
+
+
 def main():
     """직접 실행할 때만 뷰어를 시작한다."""
     try:
@@ -254,6 +261,8 @@ def main():
     sprite = None
     try:
         pico2d.hide_lattice()
+        clear_background(pico2d)
+        pico2d.update_canvas()
         try:
             sprite = load_sprite(pico2d)
             validate_animations(ANIMATIONS, sprite.w, sprite.h)
@@ -278,7 +287,7 @@ def run_viewer(pico2d, sprite):
         current_time = perf_counter()
         player.update(current_time - previous_time)
         previous_time = current_time
-        pico2d.clear_canvas()
+        clear_background(pico2d)
         draw_frame(sprite, player.frame, player.x, player.y, player.direction)
         pico2d.update_canvas()
         pico2d.delay(0.01)
