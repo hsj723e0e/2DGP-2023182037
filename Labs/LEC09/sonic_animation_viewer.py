@@ -4,6 +4,7 @@ from pathlib import Path
 from dataclasses import dataclass
 import sys
 from time import perf_counter
+from math import isfinite
 
 CANVAS_WIDTH = 1200
 CANVAS_HEIGHT = 800
@@ -117,23 +118,31 @@ class Player:
         self.state = 'playing'
 
     def update(self, elapsed):
-        if self.state == 'paused':
-            self.pause_elapsed += elapsed
-            if self.pause_elapsed + 1e-12 >= PAUSE_DURATION:
+        """프레임·정지·동작 경계를 넘은 시간도 다음 상태에 반영한다."""
+        if not isfinite(elapsed) or elapsed < 0:
+            raise ValueError('경과 시간은 유한한 0 이상의 값이어야 합니다.')
+        while elapsed > 0:
+            if self.state == 'paused':
+                remaining = PAUSE_DURATION - self.pause_elapsed
+                if elapsed + 1e-12 < remaining:
+                    self.pause_elapsed += elapsed
+                    return
+                elapsed = max(0.0, elapsed - remaining)
                 self.next_animation()
-            return
-        if self.state != 'playing':
-            return
-        self.frame_elapsed += elapsed
-        while self.frame_elapsed + 1e-12 >= FRAME_DURATION:
-            self.frame_elapsed -= FRAME_DURATION
+                continue
+            remaining = FRAME_DURATION - self.frame_elapsed
+            if elapsed + 1e-12 < remaining:
+                self.frame_elapsed += elapsed
+                return
+            elapsed = max(0.0, elapsed - remaining)
+            self.frame_elapsed = 0.0
             if self.frame_index == len(self.animation.frames) - 1:
                 self.completed_repeats += 1
                 if self.completed_repeats == REPEAT_COUNT:
                     self.state = 'paused'
                     self.pause_elapsed = 0.0
-                    break
-                self.frame_index = 0
+                else:
+                    self.frame_index = 0
             else:
                 self.frame_index += 1
 
