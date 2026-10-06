@@ -6,6 +6,7 @@ import sys
 
 CANVAS_WIDTH = 1200
 CANVAS_HEIGHT = 800
+DISPLAY_SCALE = 4
 SPRITE_PATH = Path(__file__).resolve().with_name('sonic-sprite.png')
 
 
@@ -40,7 +41,8 @@ def draw_frame(sprite, frame):
     """위쪽 기준 원본 좌표를 pico2d 좌표로 바꾸어 출력한다."""
     bottom = sprite.h - frame.top - frame.height
     sprite.clip_draw(frame.left, bottom, frame.width, frame.height,
-                     CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2)
+                     CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2,
+                     frame.width * DISPLAY_SCALE, frame.height * DISPLAY_SCALE)
 
 
 def load_sprite(pico2d):
