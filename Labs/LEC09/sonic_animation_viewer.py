@@ -106,10 +106,8 @@ class Player:
     def update(self, elapsed):
         self.frame_elapsed += elapsed
         while self.frame_elapsed + 1e-12 >= FRAME_DURATION:
-            if self.frame_index == len(self.animation.frames) - 1:
-                break
             self.frame_elapsed -= FRAME_DURATION
-            self.frame_index += 1
+            self.frame_index = (self.frame_index + 1) % len(self.animation.frames)
 
 
 def draw_frame(sprite, frame):
