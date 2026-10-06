@@ -14,6 +14,7 @@ ANCHOR_Y = CANVAS_HEIGHT // 2 - 80
 FRAME_DURATION = 0.1
 REPEAT_COUNT = 5
 PAUSE_DURATION = 1.0
+EDGE_MARGIN = 24
 SPRITE_PATH = Path(__file__).resolve().with_name('sonic-sprite.png')
 
 
@@ -125,7 +126,19 @@ class Player:
 
     def move(self, elapsed):
         """프레임 전환 사이에도 경과 시간에 비례하여 이동한다."""
-        self.x += self.direction * self.animation.speed * elapsed
+        if self.animation.speed == 0:
+            return
+        left, right = movement_bounds(self.animation)
+        span = right - left
+        offset = self.x - left
+        phase = offset if self.direction == 1 else 2 * span - offset
+        phase = (phase + self.animation.speed * elapsed) % (2 * span)
+        if phase < span:
+            self.x = left + phase
+            self.direction = 1
+        else:
+            self.x = right - (phase - span)
+            self.direction = -1
 
     def update(self, elapsed):
         """프레임·정지·동작 경계를 넘은 시간도 다음 상태에 반영한다."""
@@ -159,16 +172,33 @@ class Player:
                 self.frame_index += 1
 
 
-def draw_frame(sprite, frame, position_x=ANCHOR_X, position_y=ANCHOR_Y):
+def movement_bounds(animation):
+    """전체 프레임과 좌우 반전의 폭을 고려한 안전 이동 구간."""
+    radius = max(max(
+        frame.width / 2 if frame.anchor_x is None else frame.anchor_x,
+        frame.width / 2 if frame.anchor_x is None else frame.width - frame.anchor_x,
+    ) * DISPLAY_SCALE for frame in animation.frames)
+    left, right = EDGE_MARGIN + radius, CANVAS_WIDTH - EDGE_MARGIN - radius
+    if left >= right or not left <= ANCHOR_X <= right:
+        raise ValueError(f'{animation.name}: 프레임이 안전 이동 구간에 들어가지 않습니다.')
+    return left, right
+
+
+def draw_frame(sprite, frame, position_x=ANCHOR_X, position_y=ANCHOR_Y, direction=1):
     """위쪽 기준 원본 좌표를 pico2d 좌표로 바꾸어 출력한다."""
     bottom = sprite.h - frame.top - frame.height
     anchor_x = frame.width / 2 if frame.anchor_x is None else frame.anchor_x
     anchor_y = frame.height if frame.anchor_y is None else frame.anchor_y
-    x = position_x + (frame.width / 2 - anchor_x) * DISPLAY_SCALE
+    x = position_x + direction * (frame.width / 2 - anchor_x) * DISPLAY_SCALE
     y = position_y + (anchor_y - frame.height / 2) * DISPLAY_SCALE
-    sprite.clip_draw(frame.left, bottom, frame.width, frame.height,
-                     x, y,
-                     frame.width * DISPLAY_SCALE, frame.height * DISPLAY_SCALE)
+    if direction == -1:
+        sprite.clip_composite_draw(frame.left, bottom, frame.width, frame.height,
+                                   0, 'h', x, y,
+                                   frame.width * DISPLAY_SCALE, frame.height * DISPLAY_SCALE)
+    else:
+        sprite.clip_draw(frame.left, bottom, frame.width, frame.height,
+                         x, y,
+                         frame.width * DISPLAY_SCALE, frame.height * DISPLAY_SCALE)
 
 
 def load_sprite(pico2d):
@@ -188,12 +218,18 @@ def validate_animations(animations, image_width, image_height):
     for animation in animations:
         if not animation.frames:
             raise ValueError(f'{animation.name}: 프레임이 없습니다.')
+        if not isfinite(animation.speed) or animation.speed < 0:
+            raise ValueError(f'{animation.name}: 이동 속도가 올바르지 않습니다.')
         for index, frame in enumerate(animation.frames, start=1):
             if (frame.left < 0 or frame.top < 0
                     or frame.width <= 0 or frame.height <= 0
                     or frame.left + frame.width > image_width
                     or frame.top + frame.height > image_height):
                 raise ValueError(f'{animation.name} {index}번 프레임: 이미지 범위 오류 {frame}')
+            for anchor in (frame.anchor_x, frame.anchor_y):
+                if anchor is not None and not isfinite(anchor):
+                    raise ValueError(f'{animation.name} {index}번 프레임: 기준점 오류')
+        movement_bounds(animation)
 
 
 def handle_events(pico2d):
@@ -243,7 +279,7 @@ def run_viewer(pico2d, sprite):
         player.update(current_time - previous_time)
         previous_time = current_time
         pico2d.clear_canvas()
-        draw_frame(sprite, player.frame, player.x, player.y)
+        draw_frame(sprite, player.frame, player.x, player.y, player.direction)
         pico2d.update_canvas()
         pico2d.delay(0.01)
 
