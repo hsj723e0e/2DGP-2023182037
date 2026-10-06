@@ -12,6 +12,7 @@ ANCHOR_X = CANVAS_WIDTH // 2
 ANCHOR_Y = CANVAS_HEIGHT // 2 - 80
 FRAME_DURATION = 0.1
 REPEAT_COUNT = 5
+PAUSE_DURATION = 1.0
 SPRITE_PATH = Path(__file__).resolve().with_name('sonic-sprite.png')
 
 
@@ -108,6 +109,11 @@ class Player:
         return self.animation.frames[self.frame_index]
 
     def update(self, elapsed):
+        if self.state == 'paused':
+            self.pause_elapsed += elapsed
+            if self.pause_elapsed + 1e-12 >= PAUSE_DURATION:
+                self.state = 'ready'
+            return
         if self.state != 'playing':
             return
         self.frame_elapsed += elapsed
