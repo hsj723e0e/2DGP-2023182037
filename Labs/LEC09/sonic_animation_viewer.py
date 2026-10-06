@@ -108,11 +108,22 @@ class Player:
     def frame(self):
         return self.animation.frames[self.frame_index]
 
+    def next_animation(self):
+        if self.animation_index + 1 >= len(self.animations):
+            self.state = 'ready'
+            return
+        self.animation_index += 1
+        self.frame_index = 0
+        self.frame_elapsed = 0.0
+        self.pause_elapsed = 0.0
+        self.completed_repeats = 0
+        self.state = 'playing'
+
     def update(self, elapsed):
         if self.state == 'paused':
             self.pause_elapsed += elapsed
             if self.pause_elapsed + 1e-12 >= PAUSE_DURATION:
-                self.state = 'ready'
+                self.next_animation()
             return
         if self.state != 'playing':
             return
