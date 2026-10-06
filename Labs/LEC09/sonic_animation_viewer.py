@@ -108,6 +108,21 @@ def load_sprite(pico2d):
         raise OSError(f'스프라이트 이미지를 읽을 수 없습니다: {SPRITE_PATH} ({error})') from error
 
 
+def validate_animations(animations, image_width, image_height):
+    """빈 동작과 이미지 범위를 벗어나는 프레임을 실행 전에 검출한다."""
+    if not animations:
+        raise ValueError('재생할 동작이 없습니다.')
+    for animation in animations:
+        if not animation.frames:
+            raise ValueError(f'{animation.name}: 프레임이 없습니다.')
+        for index, frame in enumerate(animation.frames, start=1):
+            if (frame.left < 0 or frame.top < 0
+                    or frame.width <= 0 or frame.height <= 0
+                    or frame.left + frame.width > image_width
+                    or frame.top + frame.height > image_height):
+                raise ValueError(f'{animation.name} {index}번 프레임: 이미지 범위 오류 {frame}')
+
+
 def handle_events(pico2d):
     """창 닫기 또는 Esc 입력이면 실행을 종료한다."""
     for event in pico2d.get_events():
@@ -126,7 +141,8 @@ def main():
     try:
         try:
             sprite = load_sprite(pico2d)
-        except OSError as error:
+            validate_animations(ANIMATIONS, sprite.w, sprite.h)
+        except (OSError, ValueError) as error:
             print(error, file=sys.stderr)
             return 1
         while handle_events(pico2d):
