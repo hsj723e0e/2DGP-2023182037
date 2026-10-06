@@ -7,6 +7,8 @@ import sys
 CANVAS_WIDTH = 1200
 CANVAS_HEIGHT = 800
 DISPLAY_SCALE = 4
+ANCHOR_X = CANVAS_WIDTH // 2
+ANCHOR_Y = CANVAS_HEIGHT // 2 - 80
 SPRITE_PATH = Path(__file__).resolve().with_name('sonic-sprite.png')
 
 
@@ -16,6 +18,8 @@ class Frame:
     top: int
     width: int
     height: int
+    anchor_x: float | None = None
+    anchor_y: float | None = None
 
 
 FIRST_FRAME = Frame(1, 39, 29, 39)
@@ -40,8 +44,12 @@ ANIMATIONS = (
 def draw_frame(sprite, frame):
     """위쪽 기준 원본 좌표를 pico2d 좌표로 바꾸어 출력한다."""
     bottom = sprite.h - frame.top - frame.height
+    anchor_x = frame.width / 2 if frame.anchor_x is None else frame.anchor_x
+    anchor_y = frame.height if frame.anchor_y is None else frame.anchor_y
+    x = ANCHOR_X + (frame.width / 2 - anchor_x) * DISPLAY_SCALE
+    y = ANCHOR_Y + (anchor_y - frame.height / 2) * DISPLAY_SCALE
     sprite.clip_draw(frame.left, bottom, frame.width, frame.height,
-                     CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2,
+                     x, y,
                      frame.width * DISPLAY_SCALE, frame.height * DISPLAY_SCALE)
 
 
