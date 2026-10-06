@@ -97,6 +97,7 @@ class Player:
     frame_elapsed: float = 0.0
     completed_repeats: int = 0
     state: str = 'playing'
+    pause_elapsed: float = 0.0
 
     @property
     def animation(self):
@@ -115,7 +116,8 @@ class Player:
             if self.frame_index == len(self.animation.frames) - 1:
                 self.completed_repeats += 1
                 if self.completed_repeats == REPEAT_COUNT:
-                    self.state = 'finished'
+                    self.state = 'paused'
+                    self.pause_elapsed = 0.0
                     break
                 self.frame_index = 0
             else:
