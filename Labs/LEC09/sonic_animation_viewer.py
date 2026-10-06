@@ -195,9 +195,14 @@ def handle_events(pico2d):
 
 def main():
     """직접 실행할 때만 뷰어를 시작한다."""
-    import pico2d
+    try:
+        import pico2d
+    except ImportError as error:
+        print(f'pico2d 실행 환경을 확인해주세요: {error}', file=sys.stderr)
+        return 1
 
     pico2d.open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
+    sprite = None
     try:
         pico2d.hide_lattice()
         try:
@@ -206,19 +211,28 @@ def main():
         except (OSError, ValueError) as error:
             print(error, file=sys.stderr)
             return 1
-        player = Player()
-        previous_time = perf_counter()
-        while handle_events(pico2d):
-            current_time = perf_counter()
-            player.update(current_time - previous_time)
-            previous_time = current_time
-            pico2d.clear_canvas()
-            draw_frame(sprite, player.frame)
-            pico2d.update_canvas()
-            pico2d.delay(0.01)
+        run_viewer(pico2d, sprite)
+    except KeyboardInterrupt:
+        return 0
     finally:
+        # SDL 렌더러를 닫기 전에 이미지의 텍스처를 해제한다.
+        sprite = None
         pico2d.close_canvas()
     return 0
+
+
+def run_viewer(pico2d, sprite):
+    """재생·정지·전환 중 동일한 순서로 종료 이벤트를 처리한다."""
+    player = Player()
+    previous_time = perf_counter()
+    while handle_events(pico2d):
+        current_time = perf_counter()
+        player.update(current_time - previous_time)
+        previous_time = current_time
+        pico2d.clear_canvas()
+        draw_frame(sprite, player.frame)
+        pico2d.update_canvas()
+        pico2d.delay(0.01)
 
 
 if __name__ == '__main__':
