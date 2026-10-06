@@ -11,6 +11,7 @@ DISPLAY_SCALE = 4
 ANCHOR_X = CANVAS_WIDTH // 2
 ANCHOR_Y = CANVAS_HEIGHT // 2 - 80
 FRAME_DURATION = 0.1
+REPEAT_COUNT = 5
 SPRITE_PATH = Path(__file__).resolve().with_name('sonic-sprite.png')
 
 
@@ -94,6 +95,8 @@ class Player:
     animation_index: int = 0
     frame_index: int = 0
     frame_elapsed: float = 0.0
+    completed_repeats: int = 0
+    state: str = 'playing'
 
     @property
     def animation(self):
@@ -104,10 +107,19 @@ class Player:
         return self.animation.frames[self.frame_index]
 
     def update(self, elapsed):
+        if self.state != 'playing':
+            return
         self.frame_elapsed += elapsed
         while self.frame_elapsed + 1e-12 >= FRAME_DURATION:
             self.frame_elapsed -= FRAME_DURATION
-            self.frame_index = (self.frame_index + 1) % len(self.animation.frames)
+            if self.frame_index == len(self.animation.frames) - 1:
+                self.completed_repeats += 1
+                if self.completed_repeats == REPEAT_COUNT:
+                    self.state = 'finished'
+                    break
+                self.frame_index = 0
+            else:
+                self.frame_index += 1
 
 
 def draw_frame(sprite, frame):
