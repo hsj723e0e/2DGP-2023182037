@@ -1,11 +1,30 @@
 """소닉 애니메이션 뷰어: PRD의 단계별 구현."""
 
 from pathlib import Path
+from dataclasses import dataclass
 import sys
 
 CANVAS_WIDTH = 1200
 CANVAS_HEIGHT = 800
 SPRITE_PATH = Path(__file__).resolve().with_name('sonic-sprite.png')
+
+
+@dataclass(frozen=True)
+class Frame:
+    left: int
+    top: int
+    width: int
+    height: int
+
+
+FIRST_FRAME = Frame(1, 39, 29, 39)
+
+
+def draw_frame(sprite, frame):
+    """위쪽 기준 원본 좌표를 pico2d 좌표로 바꾸어 출력한다."""
+    bottom = sprite.h - frame.top - frame.height
+    sprite.clip_draw(frame.left, bottom, frame.width, frame.height,
+                     CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2)
 
 
 def load_sprite(pico2d):
@@ -41,7 +60,7 @@ def main():
             return 1
         while handle_events(pico2d):
             pico2d.clear_canvas()
-            # 이미지 표시와 애니메이션은 이후 단계에서 추가한다.
+            draw_frame(sprite, FIRST_FRAME)
             pico2d.update_canvas()
             pico2d.delay(0.01)
     finally:
