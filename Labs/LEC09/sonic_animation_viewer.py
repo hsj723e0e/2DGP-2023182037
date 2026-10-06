@@ -20,6 +20,22 @@ class Frame:
 FIRST_FRAME = Frame(1, 39, 29, 39)
 
 
+@dataclass(frozen=True)
+class Animation:
+    name: str
+    frames: tuple[Frame, ...]
+
+
+ANIMATIONS = (
+    Animation('걷기와 몸 낮추기', tuple(Frame(*rect) for rect in (
+        (1, 39, 29, 39), (31, 40, 26, 38), (58, 39, 29, 39),
+        (87, 40, 29, 38), (118, 40, 30, 38), (150, 40, 30, 38),
+        (182, 40, 30, 38), (212, 39, 29, 38), (241, 39, 28, 38),
+        (270, 45, 24, 32), (302, 51, 29, 26),
+    ))),
+)
+
+
 def draw_frame(sprite, frame):
     """위쪽 기준 원본 좌표를 pico2d 좌표로 바꾸어 출력한다."""
     bottom = sprite.h - frame.top - frame.height
@@ -60,7 +76,7 @@ def main():
             return 1
         while handle_events(pico2d):
             pico2d.clear_canvas()
-            draw_frame(sprite, FIRST_FRAME)
+            draw_frame(sprite, ANIMATIONS[0].frames[0])
             pico2d.update_canvas()
             pico2d.delay(0.01)
     finally:
