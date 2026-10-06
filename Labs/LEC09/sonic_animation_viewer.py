@@ -31,6 +31,7 @@ class Frame:
 class Animation:
     name: str
     frames: tuple[Frame, ...]
+    speed: float = 0.0  # 재생 중 이동 속도 (화면 픽셀/초), 0이면 제자리
 
 
 ANIMATIONS = (
@@ -39,17 +40,17 @@ ANIMATIONS = (
         (86, 40, 30, 38), (118, 40, 30, 38), (150, 40, 30, 38),
         (182, 40, 29, 38), (211, 39, 29, 38), (240, 39, 29, 38),
         (270, 45, 24, 32), (302, 51, 29, 26),
-    ))),
+    )), speed=110.0),
     Animation('빠른 걷기', tuple(Frame(*rect) for rect in (
         (8, 80, 26, 37), (37, 80, 27, 37), (65, 80, 31, 38),
         (97, 80, 37, 37), (135, 80, 32, 35), (170, 79, 32, 38),
         (206, 79, 26, 38), (238, 80, 24, 37), (263, 80, 30, 37),
         (295, 80, 36, 37), (334, 80, 32, 36), (370, 79, 29, 38),
-    ))),
+    )), speed=180.0),
     Animation('질주 자세', tuple(Frame(*rect) for rect in (
         (1, 124, 33, 40), (39, 124, 35, 39), (89, 125, 35, 38),
         (130, 121, 34, 42), (181, 122, 34, 41), (228, 122, 33, 40),
-    ))),
+    )), speed=300.0),
     Animation('몸 말기', tuple(Frame(*rect, anchor_y=rect[3] / 2 + 20) for rect in (
         (1, 169, 29, 30), (35, 167, 29, 31), (67, 169, 30, 29),
         (98, 169, 31, 29), (131, 168, 29, 30), (162, 168, 29, 31),
@@ -58,17 +59,17 @@ ANIMATIONS = (
     Animation('구르기', tuple(Frame(*rect, anchor_y=rect[3] / 2 + 20) for rect in (
         (1, 206, 30, 27), (36, 206, 29, 27), (70, 206, 29, 27),
         (105, 206, 29, 27), (139, 206, 29, 27), (174, 206, 29, 27),
-    ))),
+    )), speed=240.0),
     Animation('팔을 굽힌 질주', tuple(Frame(*rect) for rect in (
         (1, 239, 29, 35), (36, 239, 30, 35), (74, 239, 31, 35),
         (111, 238, 31, 36), (149, 239, 30, 35), (186, 238, 31, 36),
-    ))),
+    )), speed=320.0),
     Animation('낮은 질주', tuple(
         Frame(*rect, anchor_x=rect[2] / 2 if index < 2 else rect[2] - 15)
         for index, rect in enumerate((
         (1, 283, 29, 35), (36, 283, 30, 35), (72, 286, 39, 31),
         (123, 285, 39, 32), (172, 286, 39, 31), (218, 285, 38, 32),
-    )))),
+    ))), speed=360.0),
     Animation('세로 회전', tuple(Frame(*rect, anchor_y=rect[3] / 2 + 20) for rect in (
         (1, 326, 24, 45), (31, 327, 29, 44), (65, 327, 20, 44),
         (90, 327, 25, 43), (119, 327, 25, 43), (149, 327, 20, 44),
@@ -80,7 +81,7 @@ ANIMATIONS = (
         (1, 379, 27, 38), (31, 379, 31, 36), (64, 379, 31, 36),
         (99, 377, 33, 38), (136, 379, 32, 36), (176, 379, 33, 36),
         (217, 379, 33, 36), (254, 378, 33, 36),
-    ))),
+    )), speed=120.0),
     Animation('팔 들기', tuple(Frame(*rect) for rect in (
         (6, 429, 34, 40), (49, 426, 34, 43),
     ))),
@@ -99,6 +100,9 @@ class Player:
     completed_repeats: int = 0
     state: str = 'playing'
     pause_elapsed: float = 0.0
+    x: float = float(ANCHOR_X)
+    y: float = float(ANCHOR_Y)
+    direction: int = 1
 
     @property
     def animation(self):
@@ -115,6 +119,13 @@ class Player:
         self.pause_elapsed = 0.0
         self.completed_repeats = 0
         self.state = 'playing'
+        self.x = float(ANCHOR_X)
+        self.y = float(ANCHOR_Y)
+        self.direction = 1
+
+    def move(self, elapsed):
+        """프레임 전환 사이에도 경과 시간에 비례하여 이동한다."""
+        self.x += self.direction * self.animation.speed * elapsed
 
     def update(self, elapsed):
         """프레임·정지·동작 경계를 넘은 시간도 다음 상태에 반영한다."""
@@ -131,8 +142,10 @@ class Player:
                 continue
             remaining = FRAME_DURATION - self.frame_elapsed
             if elapsed + 1e-12 < remaining:
+                self.move(elapsed)
                 self.frame_elapsed += elapsed
                 return
+            self.move(remaining)
             elapsed = max(0.0, elapsed - remaining)
             self.frame_elapsed = 0.0
             if self.frame_index == len(self.animation.frames) - 1:
@@ -146,13 +159,13 @@ class Player:
                 self.frame_index += 1
 
 
-def draw_frame(sprite, frame):
+def draw_frame(sprite, frame, position_x=ANCHOR_X, position_y=ANCHOR_Y):
     """위쪽 기준 원본 좌표를 pico2d 좌표로 바꾸어 출력한다."""
     bottom = sprite.h - frame.top - frame.height
     anchor_x = frame.width / 2 if frame.anchor_x is None else frame.anchor_x
     anchor_y = frame.height if frame.anchor_y is None else frame.anchor_y
-    x = ANCHOR_X + (frame.width / 2 - anchor_x) * DISPLAY_SCALE
-    y = ANCHOR_Y + (anchor_y - frame.height / 2) * DISPLAY_SCALE
+    x = position_x + (frame.width / 2 - anchor_x) * DISPLAY_SCALE
+    y = position_y + (anchor_y - frame.height / 2) * DISPLAY_SCALE
     sprite.clip_draw(frame.left, bottom, frame.width, frame.height,
                      x, y,
                      frame.width * DISPLAY_SCALE, frame.height * DISPLAY_SCALE)
@@ -230,7 +243,7 @@ def run_viewer(pico2d, sprite):
         player.update(current_time - previous_time)
         previous_time = current_time
         pico2d.clear_canvas()
-        draw_frame(sprite, player.frame)
+        draw_frame(sprite, player.frame, player.x, player.y)
         pico2d.update_canvas()
         pico2d.delay(0.01)
 
