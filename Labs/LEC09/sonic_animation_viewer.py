@@ -109,10 +109,7 @@ class Player:
         return self.animation.frames[self.frame_index]
 
     def next_animation(self):
-        if self.animation_index + 1 >= len(self.animations):
-            self.state = 'ready'
-            return
-        self.animation_index += 1
+        self.animation_index = (self.animation_index + 1) % len(self.animations)
         self.frame_index = 0
         self.frame_elapsed = 0.0
         self.pause_elapsed = 0.0
